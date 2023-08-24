@@ -1,10 +1,10 @@
 # TODO: Write documentation for `Beaver`
-def main()
+def main
   filename = ARGV[0]
   lines = ARGV[1].to_i
   size = ARGV[2].to_i
   age = ARGV[3].to_i # in seconds
-  channel_list = Array( Channel(Nil)).new
+  channel_list = Array(Channel(Nil)).new
 
   time_fmt = "%FT%H.%M.%S.9%NZ"
 
@@ -20,7 +20,7 @@ def main()
     line_count += 1
 
     if line_count >= lines
-      p "rotating for line count"
+      STDERR.puts "rotating for line count"
       nfh = rotate_log(fh, filename, time_fmt, channel_list)
       fh = nfh
       line_count = 0
@@ -29,13 +29,13 @@ def main()
 
     if line_count % 100 == 0
       if fh.size > size
-        p "rotating for size #{fh.size} > #{size}"
+        STDERR.puts "rotating for size #{fh.size} > #{size}"
         fh = rotate_log(fh, filename, time_fmt, channel_list)
         line_count = 0
         rotation_time = Time.utc + age.seconds
       end
       if Time.utc > rotation_time
-        p "rotating for time #{Time.utc} > #{rotation_time}"
+        STDERR.puts "rotating for time #{Time.utc} > #{rotation_time}"
         fh = rotate_log(fh, filename, time_fmt, channel_list)
         rotation_time = Time.utc + age.seconds
         line_count = 0
@@ -44,16 +44,16 @@ def main()
 
     if line == nil
       # EOF, our client must have died - probably a falling log
-      p "Dying from nil read"
+      STDERR.puts "Dying from nil read"
       break
     end
 
     fh.puts line
   end
-  p "Dying from EOF"
-  p "about to rotate"
+  STDERR.puts "Dying from EOF"
+  STDERR.puts "about to rotate"
   rotate_log(fh, filename, time_fmt, channel_list)
-  p "rotated"
+  STDERR.puts "rotated"
   channel_list
 end
 
@@ -66,17 +66,20 @@ def rotate_log(fh, fname, time_fmt, channel_list, new_file = true) : File
   nfh = File.open(fname, "a+")
   # Spawn a fiber to compress the closed log file
   spawn name: "gzip" do
-    #p "Start compressing #{new_filename}"
+    # STDERR.puts "Start compressing #{new_filename}"
     system("gzip", ["-9", new_filename])
-    #p "Done compressing #{new_filename}"
+    # STDERR.puts "Done compressing #{new_filename}"
     channel.send(nil)
   end
   nfh
 end
 
 channel_list = main()
-# Should we wait for the `gzip`s to finish?
-#
+
+# Should we wait for the `gzip`s to finish?  This keeps the client we are
+# logging for from knowing we died.  Which *should* only happen if the
+# client dies.
+
 # Wait for all `spawn`d Fibers to finish
 STDERR.puts "Waiting for Fibers to finish..."
 channel_list.each do |channel|
