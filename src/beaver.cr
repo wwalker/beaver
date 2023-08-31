@@ -71,6 +71,7 @@ def rotate_log(fh, fname, time_fmt, channel_list, new_file = true) : File
     # STDERR.puts "Done compressing #{new_filename}"
     channel.send(nil)
   end
+  Fiber.yield
   nfh
 end
 
