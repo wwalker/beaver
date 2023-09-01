@@ -59,11 +59,26 @@ end
 
 def rotate_log(fh, fname, time_fmt, channel_list, new_file = true) : File
   fh.close
+  safetynet = fname + "-safetynet"
   channel = Channel(Nil).new
   channel_list << channel
   new_filename = fname + "." + Time.utc.to_s(time_fmt)
-  File.rename(fname, new_filename)
+  if File.exists?(fname)
+    STDERR.puts "Renaming #{fname} to #{new_filename}"
+    File.rename(fname, new_filename)
+  else
+    STDERR.puts "Kernel bug - file #{fname} disappeared"
+    if File.exists?(safetynet)
+      STDERR.puts "Renaming #{safetynet} to #{new_filename}"
+      File.rename(safetynet, new_filename)
+    else
+      STDERR.puts "Kernel bug - file #{safetynet} disappeared"
+    end
+  end
+  sleep 1 # Workaround a bug in the kernel
   nfh = File.open(fname, "a+")
+  File.delete(safetynet) if File.exists?(safetynet)
+  File.link(new_filename, safetynet)
   # Spawn a fiber to compress the closed log file
   spawn name: "gzip" do
     # STDERR.puts "Start compressing #{new_filename}"
