@@ -1,3 +1,5 @@
+require "./build-info"
+
 # TODO: Write documentation for `Beaver`
 def main
   filename = ARGV[0]
@@ -89,6 +91,8 @@ def rotate_log(fh, fname, time_fmt, channel_list, new_file = true) : File
   Fiber.yield
   nfh
 end
+
+STDERR.puts BUILD_INFO.version_full
 
 channel_list = main()
 
