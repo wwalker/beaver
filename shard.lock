@@ -1,0 +1,6 @@
+version: 2.0
+shards:
+  build-info:
+    git: https://github.com/wwalker/build-info.cr.git
+    version: 0.1.2+git.commit.eadefc4a2275d01634ad6df3f8e999c07bbc4d02
+

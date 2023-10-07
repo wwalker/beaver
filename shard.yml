@@ -1,5 +1,5 @@
 name: beaver
-version: 0.1.0
+version: 0.1.2
 
 authors:
   - Wayne Walker <waywalke@solid-constructs.com>
@@ -9,6 +9,10 @@ targets:
   beaver:
     main: src/beaver.cr
 
-crystal: 1.7.3
+dependencies:
+  build-info:
+    github: wwalker/build-info.cr
+
+crystal: 1.9.2
 
 license: MIT
