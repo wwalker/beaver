@@ -13,7 +13,7 @@ class Beaver
     @new_filename = ""
     @channel_list = Array(Channel(Nil)).new
     @time_fmt = "%FT%H.%M.%S.9%NZ"
-    @line_count = 0
+    @lines_since_rotate = 0
     @rotation_time = Time.utc + @file_age_limit.seconds
     @fh = File.open "/dev/null", "rw"
   end # def initialize
@@ -26,14 +26,13 @@ class Beaver
     STDERR.puts "  file-age-limit: The maximum age of each file in seconds"
   end # def self.usage
 
+  # `self` If *filename* exists handle it.
+  #   If it's a symlink, delete it,
+  #   else rename it with a timestamp.
   def rename_original
     if File.exists?(@filename)
-      if File.symlink?(@filename)
-        File.delete(@filename)
-      else
-        set_new_filename
-        File.rename(@filename, @new_filename)
-      end
+      set_new_filename
+      File.rename(@filename, @new_filename)
     end
   end # def rename_original
 
@@ -51,6 +50,9 @@ class Beaver
 
   def rotate_log
     @fh.close
+    # Reset the line count and rotation time
+    @lines_since_rotate = 0
+    @rotation_time = Time.utc + @file_age_limit.seconds
     open_new_file
     start_compression_job
     sleep 1 # Workaround a bug in the kernel
@@ -62,37 +64,30 @@ class Beaver
     @new_filename = @filename + "." + Time.utc.to_s(@time_fmt)
   end # def set_new_filename
 
-  def link_to_new_file
+  # Create a symlink to the new timestamped filename, replacing any existing symlink
+  def symlink_to_new_file
     File.delete(@filename) if File.exists?(@filename)
-    File.link(@new_filename, @filename)
-  end # def link_to_new_file
+    File.symlink(@new_filename, @filename)
+  end # def symlink_to_new_file
 
   def open_new_file
     set_new_filename
     @fh = File.open(@new_filename, "a+")
-    link_to_new_file
+    symlink_to_new_file
   end # def open_new_file
 
   def incr_line_count
-    @line_count += 1
+    @lines_since_rotate += 1
   end # def incr_line_count
 
+  # Returns whether or not it is time to rotate the log
   def should_rotate?(line : String) : Bool
-    rotate = false
-    if @line_count >= @line_limit
-      @line_count -= @line_limit
-      rotate = true
-    end
-    if @fh.size + line.size > @file_size_limit
-      rotate = true
-    end
-    if Time.utc > @rotation_time
-      @rotation_time = Time.utc + @file_age_limit.seconds
-      rotate = true
-    end
-    rotate
+    (@lines_since_rotate >= @line_limit || @fh.size + line.size > @file_size_limit || Time.utc > @rotation_time) ? true : false
   end # def should_rotate?
 
+  # Reads from STDIN and writes to the current log file.
+  # If the log file is too large, too old, or has too many lines,
+  # then it is rotated.
   def read_and_log
     STDIN.each_line do |line|
       incr_line_count
@@ -102,6 +97,8 @@ class Beaver
   end   # def read_and_log
 
   def wait_for_compression_jobs
+    # TODO: Decide if we should wait for the compression jobs to finish
+    #  or just background them and exit.
     STDERR.puts "Waiting for Fibers to finish..."
     @channel_list.each do |channel|
       STDERR.puts "Waiting for #{channel}"
