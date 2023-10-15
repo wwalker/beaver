@@ -7,7 +7,7 @@ authors:
 
 targets:
   beaver:
-    main: src/beaver.cr
+    main: src/beaver-exe.cr
 
 dependencies:
   build-info:
