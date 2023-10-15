@@ -15,7 +15,7 @@ class Beaver
     @time_fmt = "%FT%H.%M.%S.9%NZ"
     @lines_since_rotate = 0
     @rotation_time = Time.utc + @file_age_limit.seconds
-    @fh = File.open "/dev/null", "rw"
+    @fh = File.open "/dev/null", "w"
   end # def initialize
 
   def self.usage
