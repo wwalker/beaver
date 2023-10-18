@@ -3,7 +3,7 @@ require "./beaver"
 
 def usage(msg ="", exit_code = 0)
   STDERR.puts msg if msg != ""
-  STDERR.puts "Usage: #{$0} [options] filename line_limit file_size_limit file_age_limit"
+  STDERR.puts "Usage: #{PROGRAM_NAME} [options] filename line_limit file_size_limit file_age_limit"
   exit 0
 end
 
@@ -34,13 +34,15 @@ def version_full
 end
 
 def main
-  case ARGV[0]
-  when "--help", "-h"
-    usage
-  when "--version", "-v"
-    version
-  when "--version-full", "-V"
-    version_full
+  if ARGV.size > 0
+    case ARGV[0]
+    when "--help", "-h"
+      usage
+    when "--version", "-v"
+      version
+    when "--version-full", "-V"
+      version_full
+    end
   end
 
   usage("Wrong argument count!", 1) if ARGV.size != 4
