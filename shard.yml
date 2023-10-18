@@ -10,8 +10,9 @@ targets:
     main: src/beaver-exe.cr
 
 dependencies:
-  build-info:
-    github: wwalker/build-info.cr
+  shard:
+    github: maiha/shard.cr
+    version: 1.0.0
 
 crystal: 1.9.2
 
