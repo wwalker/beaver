@@ -5,6 +5,7 @@ set -e
 # set -x
 
 set -a
+TZ=UTC
 CRYSTAL_COMMAND=${CRYSTAL_COMMAND:-$(which crystal)}
 SHARDS_COMMAND=${SHARDS_COMMAND:-$(which shards)}
 
@@ -24,5 +25,11 @@ BUILD_USER=$USER
 BUILD_ARGS="$*"
 set +a
 
+env
 # 	docker run -u $UID:$GID -v $PWD:/src -it crystallang/crystal:latest-alpine sh -c "cd /src && shards build $@"
-shards build "$@"
+docker run \
+  -u "$UID:${GROUPS[0]}" -v "$PWD":/src -it \
+  crystallang/crystal:1.11.2-alpine \
+  sh -c "cd /src && shards build --static $*"
+
+# shards build "$@"
