@@ -38,11 +38,11 @@ class Beaver
 
   def start_compression_job
     # Spawn a fiber to compress the closed log file
-    spawn name: "gzip" do
+    spawn name: "zstd" do
       channel = Channel(Nil).new
       @channel_list << channel
       # STDERR.puts "Start compressing #{new_filename}"
-      system("gzip", ["-9", @old_filename])
+      system("zstd", ["-9", "-T0", "--rm", @old_filename])
       # STDERR.puts "Done compressing #{new_filename}"
       channel.send(nil)
     end

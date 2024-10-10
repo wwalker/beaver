@@ -28,22 +28,8 @@ set +a
 env
 # 	docker run -u $UID:$GID -v $PWD:/src -it crystallang/crystal:latest-alpine sh -c "cd /src && shards build $@"
 docker run \
-  -e CRYSTAL_COMMAND \
-  -e CRYSTAL_VERSION \
-  -e LLVM_VERSION \
-  -e SHARDS_COMMAND \
-  -e SHARDS_VERSION \
-  -e GIT_REPO_CLEAN \
-  -e GIT_TAG \
-  -e GIT_REVISION \
-  -e GIT_BRANCH \
-  -e GIT_COMMIT_DATE \
-  -e GIT_UNTRACKED \
-  -e BUILD_TIME \
-  -e BUILD_USER \
-  -e BUILD_ARGS \
   -u "$UID:${GROUPS[0]}" -v "$PWD":/src -it \
-  crystallang/crystal:latest-alpine \
+  crystallang/crystal:1.11.2-alpine \
   sh -c "cd /src && shards build --static $*"
 
 # shards build "$@"
