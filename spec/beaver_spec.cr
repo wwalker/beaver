@@ -54,7 +54,7 @@ describe Beaver do
 
       # Cleanup
       File.delete("test.log") if File.exists?("test.log")
-      Dir.glob("test.log.*").each { |f| File.delete(f) }
+      Dir.glob("test.log.*").each { |file| File.delete(file) }
     end
 
     it "returns true when file age limit is exceeded" do
@@ -93,13 +93,13 @@ describe Beaver do
 
       # Cleanup
       File.delete("test_symlink.log") if File.exists?("test_symlink.log")
-      Dir.glob("test_symlink.log.*").each { |f| File.delete(f) }
+      Dir.glob("test_symlink.log.*").each { |file| File.delete(file) }
     end
 
     it "replaces existing symlink" do
       # Clean up before test
       File.delete("test_replace2.log") if File.exists?("test_replace2.log")
-      Dir.glob("test_replace2.log.*").each { |f| File.delete(f) }
+      Dir.glob("test_replace2.log.*").each { |file| File.delete(file) }
 
       beaver = Beaver.new("test_replace2.log", 100_i64, 1024_i64, 3600_i64)
 
@@ -119,7 +119,7 @@ describe Beaver do
 
       # Cleanup
       File.delete("test_replace2.log") if File.exists?("test_replace2.log")
-      Dir.glob("test_replace2.log.*").each { |f| File.delete(f) }
+      Dir.glob("test_replace2.log.*").each { |file| File.delete(file) }
     end
   end
 
@@ -146,7 +146,7 @@ describe Beaver do
       renamed_files.size.should eq(1)
 
       # Cleanup
-      renamed_files.each { |f| File.delete(f) }
+      renamed_files.each { |file| File.delete(file) }
     end
   end
 
@@ -161,7 +161,7 @@ describe Beaver do
 
       # Cleanup
       File.delete("new_file.log") if File.exists?("new_file.log")
-      Dir.glob("new_file.log.*").each { |f| File.delete(f) }
+      Dir.glob("new_file.log.*").each { |file| File.delete(file) }
     end
 
     it "creates symlink pointing to timestamped file" do
@@ -174,7 +174,7 @@ describe Beaver do
 
       # Cleanup
       File.delete("symlink_test.log") if File.exists?("symlink_test.log")
-      Dir.glob("symlink_test.log.*").each { |f| File.delete(f) }
+      Dir.glob("symlink_test.log.*").each { |file| File.delete(file) }
     end
   end
 
@@ -182,7 +182,7 @@ describe Beaver do
     it "uses correct timestamp format in filename" do
       # Clean up before test
       File.delete("timestamp3.log") if File.exists?("timestamp3.log")
-      Dir.glob("timestamp3.log.*").each { |f| File.delete(f) }
+      Dir.glob("timestamp3.log.*").each { |file| File.delete(file) }
 
       beaver = Beaver.new("timestamp3.log", 100_i64, 1024_i64, 3600_i64)
       beaver.open_new_file
@@ -197,7 +197,7 @@ describe Beaver do
 
       # Cleanup
       File.delete("timestamp3.log") if File.exists?("timestamp3.log")
-      timestamped_files.each { |f| File.delete(f) }
+      timestamped_files.each { |file| File.delete(file) }
     end
   end
 
@@ -218,22 +218,22 @@ describe Beaver do
 
       # Cleanup
       File.delete("multi_rotate.log") if File.exists?("multi_rotate.log")
-      Dir.glob("multi_rotate.log.*").each { |f| File.delete(f) }
+      Dir.glob("multi_rotate.log.*").each { |file| File.delete(file) }
     end
 
     it "handles file operations correctly" do
       beaver = Beaver.new("file_ops.log", 100_i64, 1024_i64, 3600_i64)
 
       # Test the complete workflow
-      beaver.rename_original  # Should do nothing for non-existent file
-      beaver.open_new_file    # Should create file and symlink
+      beaver.rename_original # Should do nothing for non-existent file
+      beaver.open_new_file   # Should create file and symlink
 
       File.exists?("file_ops.log").should be_true
       File.symlink?("file_ops.log").should be_true
 
       # Cleanup
       File.delete("file_ops.log") if File.exists?("file_ops.log")
-      Dir.glob("file_ops.log.*").each { |f| File.delete(f) }
+      Dir.glob("file_ops.log.*").each { |file| File.delete(file) }
     end
   end
 
@@ -252,7 +252,7 @@ describe Beaver do
 
       # Cleanup
       File.delete("zero_size.log") if File.exists?("zero_size.log")
-      Dir.glob("zero_size.log.*").each { |f| File.delete(f) }
+      Dir.glob("zero_size.log.*").each { |file| File.delete(file) }
     end
 
     it "handles empty string filename" do
@@ -273,7 +273,7 @@ describe Beaver do
 
       # Cleanup
       File.delete("test-file_123.log") if File.exists?("test-file_123.log")
-      Dir.glob("test-file_123.log.*").each { |f| File.delete(f) }
+      Dir.glob("test-file_123.log.*").each { |file| File.delete(file) }
     end
 
     it "handles very large limit values" do
@@ -306,7 +306,7 @@ describe Beaver do
 
       # Cleanup
       File.delete("handles.log") if File.exists?("handles.log")
-      Dir.glob("handles.log.*").each { |f| File.delete(f) }
+      Dir.glob("handles.log.*").each { |file| File.delete(file) }
     end
   end
 end

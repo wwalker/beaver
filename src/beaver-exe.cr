@@ -1,7 +1,7 @@
 require "shard"
 require "./beaver"
 
-def usage(msg ="", exit_code = 0)
+def usage(msg = "", exit_code = 0)
   STDERR.puts msg if msg != ""
   STDERR.puts "Usage: #{PROGRAM_NAME} [options] filename line_limit file_size_limit file_age_limit"
   exit 0
@@ -25,7 +25,6 @@ def version_full
 
   license = Shard.license
   # year    = Shard.time.to_s("%Y")
-  authors = Shard.authors.join(", ")
 
   STDERR.puts "The %s License (%s)" % [license, license]
   # STDERR.puts "Copyright (c) %s %s" % [year, author]

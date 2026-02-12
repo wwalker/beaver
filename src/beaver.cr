@@ -97,8 +97,7 @@ class Beaver
   end   # def read_and_log
 
   def wait_for_compression_jobs
-    # TODO: Decide if we should wait for the compression jobs to finish
-    #  or just background them and exit.
+    # NOTE: Currently waiting for compression jobs to finish before exit
     STDERR.puts "Waiting for Fibers to finish..."
     @channel_list.each do |channel|
       STDERR.puts "Waiting for #{channel}"

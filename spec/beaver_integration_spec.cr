@@ -7,13 +7,12 @@ require "file_utils"
 # Helper to cleanup test files
 def cleanup_test_files(base_name : String)
   File.delete(base_name) if File.exists?(base_name)
-  Dir.glob("#{base_name}.*").each do |f|
-    File.delete(f) if File.exists?(f)
+  Dir.glob("#{base_name}.*").each do |file|
+    File.delete(file) if File.exists?(file)
   end
 end
 
 describe "Beaver Integration Tests" do
-
   describe "complete workflow" do
     it "creates files and symlinks correctly" do
       test_file = "integration_test.log"
@@ -68,9 +67,6 @@ describe "Beaver Integration Tests" do
       beaver = Beaver.new(test_file, 2_i64, 100000_i64, 3600_i64)
       beaver.open_new_file
 
-      # Get initial file
-      first_file = File.realpath(test_file)
-
       # Simulate line counting
       beaver.incr_line_count
       beaver.should_rotate?("test").should be_false
@@ -115,11 +111,11 @@ describe "Beaver Integration Tests" do
       beaver = Beaver.new(test_file, 100_i64, 10000_i64, 3600_i64)
 
       # Sequence of operations
-      beaver.rename_original   # Should do nothing
-      beaver.open_new_file     # Creates file and symlink
-      beaver.incr_line_count   # Increment counter
-      beaver.set_new_filename  # Generate new filename
-      beaver.incr_line_count   # Increment again
+      beaver.rename_original  # Should do nothing
+      beaver.open_new_file    # Creates file and symlink
+      beaver.incr_line_count  # Increment counter
+      beaver.set_new_filename # Generate new filename
+      beaver.incr_line_count  # Increment again
 
       # Verify state
       File.exists?(test_file).should be_true
@@ -222,7 +218,7 @@ describe "Beaver Integration Tests" do
         beaver.set_new_filename
         beaver.open_new_file
         filenames << File.realpath(test_file)
-        sleep 0.001  # Small delay to ensure different timestamps
+        sleep 0.001 # Small delay to ensure different timestamps
       end
 
       # All filenames should be unique
